@@ -1,3 +1,8 @@
+/* ===================================================================
+   DIVYADHARSHINI D — PORTFOLIO
+   Design system: futuristic command-center HUD, dark / crimson / white
+   =================================================================== */
+
 :root {
   --bg: #050506;
   --bg-alt: #0a0b0d;
@@ -1057,4 +1062,18 @@ body::after {
 .cert-card:hover .cert-logo img {
   transform: scale(1.1);
   filter: brightness(1.35) drop-shadow(0 0 10px rgba(227, 27, 35, 0.45));
+}
+
+.cert-logo img {
+  width: 90px;
+  height: 55px;
+  object-fit: contain;
+  display: block;
+}
+
+.ibm-logo {
+  width: 110px !important;
+  height: 55px !important;
+  object-fit: contain;
+  display: block;
 }
