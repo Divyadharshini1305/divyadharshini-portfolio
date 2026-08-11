@@ -1,8 +1,3 @@
-/* ===================================================================
-   DIVYADHARSHINI D — PORTFOLIO
-   Design system: futuristic command-center HUD, dark / crimson / white
-   =================================================================== */
-
 :root {
   --bg: #050506;
   --bg-alt: #0a0b0d;
@@ -357,7 +352,8 @@ button:focus-visible {
 
 .scroll-cue {
   position: absolute;
-  bottom: 34px; left: 50%;
+  bottom: -2px;
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -365,6 +361,7 @@ button:focus-visible {
   gap: 10px;
   z-index: 2;
 }
+
 .scroll-cue-line {
   width: 1px; height: 34px;
   background: linear-gradient(var(--accent), transparent);
@@ -1008,4 +1005,56 @@ body::after {
   100% {
     transform: translate(-160px, -120px) scale(1.12);
   }
+}
+
+
+/* Certification Logos */
+.cert-logo {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.cert-logo img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: grayscale(100%) brightness(1.8);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+/* Cisco / IBM logo hover */
+.cert-card:hover .cert-logo {
+  transform: translateY(-3px);
+}
+
+.cert-card:hover .cert-logo img {
+  filter: grayscale(0%) brightness(1.1);
+  transform: scale(1.08);
+}
+
+.cert-logo {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.cert-logo img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  filter: brightness(1.15);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.cert-card:hover .cert-logo img {
+  transform: scale(1.1);
+  filter: brightness(1.35) drop-shadow(0 0 10px rgba(227, 27, 35, 0.45));
 }
