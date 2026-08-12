@@ -28,6 +28,16 @@
   --accent-4-bright: #c084fc;
   --accent-4-glow: rgba(168, 85, 247, 0.35);
 
+  /* Atmospheric palette — used only for background glow/particles, not UI accents */
+  --atmo-lavender: #caa9f3;
+  --atmo-purple: #b37ad4;
+  --atmo-periwinkle: #7997e6;
+  --atmo-blue: #206abc;
+  --atmo-deep-blue: #0e155e;
+  --atmo-indigo: #52227f;
+  --atmo-amethyst: #422962;
+  --atmo-violet: #6d418b;
+
   --text: #f5f5f6;
   --muted: #9a9ea3;
   --muted-2: #6c7075;
@@ -81,8 +91,8 @@ button:focus-visible {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.065) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.065) 1px, transparent 1px);
   background-size: 46px 46px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 40%, transparent 100%);
 }
@@ -247,16 +257,19 @@ button:focus-visible {
   width: 2px; height: 2px;
   background: var(--accent-bright);
   border-radius: 50%;
-  opacity: 0.5;
+  opacity: 0.4;
   animation: float-up linear infinite;
 }
 .particle.particle-cyan { background: var(--accent-2-bright); }
 .particle.particle-gold { background: var(--accent-3-bright); }
+.particle.particle-purple { background: var(--atmo-purple); }
+.particle.particle-indigo { background: var(--atmo-periwinkle); }
 @keyframes float-up {
-  0% { transform: translateY(0); opacity: 0; }
+  0% { transform: translateY(0) scale(1); opacity: 0; }
   10% { opacity: 0.6; }
+  50% { transform: translateY(-60px) scale(2); }
   90% { opacity: 0.4; }
-  100% { transform: translateY(-120px); opacity: 0; }
+  100% { transform: translateY(-120px) scale(1); opacity: 0; }
 }
 
 .hero-content {
@@ -385,8 +398,8 @@ button:focus-visible {
 .section-alt {
   background:
     linear-gradient(
-      rgba(10, 11, 13, 0.94),
-      rgba(10, 11, 13, 0.94)
+      rgba(10, 11, 13, 0.78),
+      rgba(10, 11, 13, 0.78)
     );
 }
 
@@ -835,15 +848,19 @@ button:focus-visible {
 }
 
 /* ============================================================
-   CINEMATIC BACKGROUND ENHANCEMENT
-   Background only — does not affect existing components
+   BACKGROUND ATMOSPHERE
+   Purple / indigo / blue ambient lighting layered behind the
+   existing grid + existing red/cyan/gold accents.
+   Background only — does not affect existing components.
    ============================================================ */
 
 body {
   position: relative;
 }
 
-/* Large atmospheric red + cyan glows */
+/* Large, soft purple/indigo/blue atmospheric wash — sits behind
+   every section. Positioned per corner: top-left indigo/purple,
+   top-right deep blue, bottom-left violet, bottom-right blue/purple. */
 body::before {
   content: '';
   position: fixed;
@@ -852,60 +869,46 @@ body::before {
   pointer-events: none;
 
   background:
-    /* RED */
+    /* top-left — indigo / purple */
     radial-gradient(
-      circle at 10% 20%,
-      rgba(227, 27, 35, 0.22),
-      transparent 27%
+      circle at 14% 18%,
+      rgba(82, 34, 127, 0.32),
+      rgba(179, 122, 212, 0.10) 32%,
+      transparent 55%
     ),
-
-    /* CYAN */
+    /* top-right — deep blue */
     radial-gradient(
-      circle at 90% 25%,
-      rgba(31, 214, 232, 0.18),
-      transparent 28%
+      circle at 88% 22%,
+      rgba(14, 21, 94, 0.34),
+      rgba(32, 106, 188, 0.14) 34%,
+      transparent 58%
     ),
-
-    /* PURPLE */
+    /* middle/bottom-left — muted violet */
     radial-gradient(
-      circle at 18% 78%,
-      rgba(168, 85, 247, 0.18),
-      transparent 28%
+      circle at 16% 76%,
+      rgba(109, 65, 139, 0.28),
+      transparent 52%
     ),
-
-    /* GOLD */
+    /* bottom-right — subtle blue/purple */
     radial-gradient(
-      circle at 82% 82%,
-      rgba(245, 185, 66, 0.12),
-      transparent 27%
+      circle at 86% 84%,
+      rgba(32, 106, 188, 0.20),
+      rgba(179, 122, 212, 0.08) 30%,
+      transparent 55%
     );
 
-  filter: blur(35px);
+  filter: blur(60px);
 
-  animation:
-    cinematicAtmosphere 16s ease-in-out infinite alternate;
+  animation: atmosphereDrift 22s ease-in-out infinite alternate;
 }
 
-@keyframes cinematicAtmosphere {
-  0% {
-    transform: translate3d(-2%, -1%, 0) scale(1);
-  }
-
-  35% {
-    transform: translate3d(2%, 2%, 0) scale(1.04);
-  }
-
-  70% {
-    transform: translate3d(-1%, 3%, 0) scale(1.07);
-  }
-
-  100% {
-    transform: translate3d(3%, -1%, 0) scale(1.03);
-  }
+@keyframes atmosphereDrift {
+  0%   { transform: translate3d(-1%, -0.5%, 0) scale(1); }
+  50%  { transform: translate3d(1%, 1%, 0) scale(1.035); }
+  100% { transform: translate3d(-0.5%, 0.8%, 0) scale(1.02); }
 }
 
-
-/* Slow-moving futuristic grid across the page */
+/* Existing slow-moving grid across the page (kept, slightly more visible) */
 body::after {
   content: '';
   position: fixed;
@@ -915,12 +918,12 @@ body::after {
 
   background-image:
     linear-gradient(
-      rgba(255, 255, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0.065) 1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0.065) 1px,
       transparent 1px
     );
 
@@ -939,7 +942,7 @@ body::after {
 }
 
 
-/* Floating red atmospheric glow */
+/* Existing floating red atmospheric glow — kept as the hero's main accent */
 .hero::before {
   content: '';
   position: absolute;
@@ -976,7 +979,7 @@ body::after {
 }
 
 
-/* Floating cyan atmospheric glow */
+/* Existing floating cyan atmospheric glow — kept */
 .hero::after {
   content: '';
   position: absolute;
@@ -1012,6 +1015,182 @@ body::after {
   }
 }
 
+/* ---------- Per-section atmosphere variation ----------
+   Each section gets its own soft, blurred tint layered above the
+   page-wide wash and below all real content (text/cards/panels). */
+#about,
+#skills,
+#experience,
+#projects,
+#certifications,
+#achievements,
+#education,
+.contact-section {
+  isolation: isolate; /* keeps each section's ::before contained */
+}
+
+#about::before,
+#skills::before,
+#experience::before,
+#projects::before,
+#certifications::before,
+#achievements::before,
+#education::before,
+.contact-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(70px);
+  animation: sectionGlowDrift 20s ease-in-out infinite alternate;
+}
+
+/* About — dark purple */
+#about::before {
+  background:
+    radial-gradient(ellipse 90% 75% at 22% 10%, rgba(66, 41, 98, 0.34), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 82% 95%, rgba(82, 34, 127, 0.22), transparent 70%);
+}
+
+/* Skills — blue/cyan + purple */
+#skills::before {
+  background:
+    radial-gradient(ellipse 90% 75% at 80% 8%, rgba(32, 106, 188, 0.26), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 15% 95%, rgba(179, 122, 212, 0.20), transparent 70%);
+}
+
+/* Experience — indigo/purple */
+#experience::before {
+  background:
+    radial-gradient(ellipse 90% 78% at 18% 15%, rgba(82, 34, 127, 0.30), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 85% 90%, rgba(109, 65, 139, 0.22), transparent 70%);
+}
+
+/* Projects — purple + cyan */
+#projects::before {
+  background:
+    radial-gradient(ellipse 90% 75% at 85% 12%, rgba(179, 122, 212, 0.24), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 12% 92%, rgba(31, 214, 232, 0.13), transparent 70%);
+}
+
+/* Certifications — existing red/cyan, kept as the dominant accent here */
+#certifications::before {
+  background:
+    radial-gradient(ellipse 90% 75% at 18% 10%, rgba(227, 27, 35, 0.14), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 84% 92%, rgba(31, 214, 232, 0.14), transparent 70%);
+}
+
+/* Achievements — existing gold, kept as the dominant accent here */
+#achievements::before {
+  background:
+    radial-gradient(ellipse 90% 78% at 82% 12%, rgba(245, 185, 66, 0.14), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 16% 90%, rgba(82, 34, 127, 0.14), transparent 70%);
+}
+
+/* Education — blue/purple */
+#education::before {
+  background:
+    radial-gradient(ellipse 90% 75% at 20% 12%, rgba(14, 21, 94, 0.32), transparent 70%),
+    radial-gradient(ellipse 85% 70% at 84% 92%, rgba(179, 122, 212, 0.18), transparent 70%);
+}
+
+/* Contact — purple/blue, layered with the existing contact grid */
+.contact-section::before {
+  background:
+    radial-gradient(ellipse 60% 55% at 24% 20%, rgba(82, 34, 127, 0.24), transparent 58%),
+    radial-gradient(ellipse 55% 50% at 80% 80%, rgba(32, 106, 188, 0.18), transparent 55%);
+}
+
+@keyframes sectionGlowDrift {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(0.6%, -0.8%, 0) scale(1.04); }
+}
+
+/* ---------- Signal nodes (animated) ----------
+   Soft pulsing/drifting glow orbs inspired by the bioluminescent
+   reference — reframed as HUD "signal nodes". Background only,
+   purely decorative, sits behind hero/contact content. */
+.signal-node {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(18px);
+  animation: nodePulse ease-in-out infinite, nodeDrift ease-in-out infinite;
+}
+
+.node-1 {
+  width: 140px; height: 140px;
+  top: 16%; left: 10%;
+  background: radial-gradient(circle, rgba(202, 169, 243, 0.30), rgba(202, 169, 243, 0.06) 55%, transparent 75%);
+  animation-duration: 9s, 17s;
+}
+.node-2 {
+  width: 110px; height: 110px;
+  top: 62%; right: 12%;
+  background: radial-gradient(circle, rgba(121, 151, 230, 0.28), rgba(121, 151, 230, 0.05) 55%, transparent 75%);
+  animation-duration: 11s, 19s;
+  animation-delay: 1.5s, 0s;
+}
+.node-3 {
+  width: 90px; height: 90px;
+  bottom: 12%; left: 20%;
+  background: radial-gradient(circle, rgba(32, 106, 188, 0.26), rgba(32, 106, 188, 0.05) 55%, transparent 75%);
+  animation-duration: 8s, 15s;
+  animation-delay: 3s, 2s;
+}
+.node-4 {
+  width: 130px; height: 130px;
+  top: 22%; right: 16%;
+  background: radial-gradient(circle, rgba(179, 122, 212, 0.26), rgba(179, 122, 212, 0.05) 55%, transparent 75%);
+  animation-duration: 10s, 18s;
+}
+
+@keyframes nodePulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+@keyframes nodeDrift {
+  0% { margin: 0 0 0 0; }
+  50% { margin: -10px 0 0 12px; }
+  100% { margin: 0 0 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-node { animation: none; opacity: 0.6; }
+}
+@media (max-width: 640px) {
+  .signal-node { display: none; }
+}
+
+/* ---------- Mouse-following glow (desktop only, subtle) ---------- */
+.mouse-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 560px;
+  height: 560px;
+  margin-left: -280px;
+  margin-top: -280px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(179, 122, 212, 0.10),
+    rgba(32, 106, 188, 0.07) 45%,
+    transparent 72%
+  );
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease);
+  will-change: transform;
+}
+.mouse-glow.is-active { opacity: 1; }
+@media (max-width: 860px), (pointer: coarse) {
+  .mouse-glow { display: none; }
+}
+
 
 /* Certification Logos */
 .cert-logo {
@@ -1041,4 +1220,431 @@ body::after {
   width: 90px !important;
   height: 55px !important;
   object-fit: contain !important;
+}
+
+/* ================= AI SCAN CONSOLE (Smart Plant Diagnosis) ================= */
+.scan-console {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 28px;
+  align-items: stretch;
+  margin: 0 0 30px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: rgba(31, 214, 232, 0.02);
+}
+
+/* ---- Viewport: leaf silhouette + scanning beam ---- */
+.scan-viewport {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 3px;
+  background: radial-gradient(circle at 50% 40%, rgba(31, 214, 232, 0.07), transparent 70%);
+}
+.scan-grid-overlay {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(31, 214, 232, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 214, 232, 0.07) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.scan-leaf {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.scan-leaf-outline {
+  fill: rgba(31, 214, 232, 0.05);
+  stroke: var(--accent-2);
+  stroke-width: 1.4;
+  opacity: 0.85;
+}
+.scan-leaf-vein {
+  fill: none;
+  stroke: var(--accent-2);
+  stroke-width: 1;
+  opacity: 0.4;
+}
+.scan-leaf-vein-sm { stroke-width: 0.75; opacity: 0.3; }
+
+.scan-beam {
+  position: absolute;
+  left: 0; right: 0;
+  top: 0;
+  height: 26px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(31, 214, 232, 0.5) 45%,
+    var(--accent-2-bright) 50%,
+    rgba(31, 214, 232, 0.5) 55%,
+    transparent
+  );
+  opacity: 0;
+  filter: drop-shadow(0 0 6px var(--accent-2-glow));
+}
+.scan-console.scanning .scan-beam {
+  opacity: 1;
+  animation: scan-sweep 2.1s cubic-bezier(0.65, 0, 0.35, 1) 1 forwards;
+}
+@keyframes scan-sweep {
+  0% { transform: translateY(-10px); opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { transform: translateY(200px); opacity: 0; }
+}
+
+/* Detection markers — appear once scan completes */
+.scan-target {
+  position: absolute;
+  width: 16px; height: 16px;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.scan-target::before, .scan-target::after {
+  content: '';
+  position: absolute;
+  background: var(--accent-3-bright);
+}
+.scan-target::before { left: 50%; top: 0; width: 1px; height: 100%; transform: translateX(-50%); }
+.scan-target::after { top: 50%; left: 0; height: 1px; width: 100%; transform: translateY(-50%); }
+.scan-target.st-1 { top: 30%; left: 38%; }
+.scan-target.st-2 { top: 52%; left: 63%; }
+.scan-target.st-3 { top: 70%; left: 42%; }
+.scan-console.scan-complete .scan-target {
+  opacity: 0.85;
+  transform: scale(1);
+}
+.scan-console.scan-complete .scan-target.st-2 { transition-delay: 0.12s; }
+.scan-console.scan-complete .scan-target.st-3 { transition-delay: 0.24s; }
+
+.scan-corner-frame { position: absolute; inset: 8px; pointer-events: none; }
+.scf {
+  position: absolute;
+  width: 12px; height: 12px;
+  border: 1.4px solid var(--accent-2);
+  opacity: 0.55;
+}
+.scf.tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+.scf.tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+.scf.bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+.scf.br { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+/* ---- Readout: terminal log + confidence meter + result ---- */
+.scan-readout { display: flex; flex-direction: column; min-width: 0; }
+.scan-readout-title {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin-bottom: 12px;
+}
+.scan-log {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.scan-log li {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  width: 0;
+  border-right: 1px solid transparent;
+}
+.scan-log li.typing {
+  animation: scan-type var(--type-dur, 1s) steps(var(--type-steps, 20)) forwards,
+             scan-caret 0.7s step-end 3;
+  border-right-color: var(--accent-2-bright);
+}
+.scan-log li.done { width: auto; border-right-color: transparent; }
+@keyframes scan-type { to { width: var(--type-width, 100%); } }
+@keyframes scan-caret { 50% { border-right-color: transparent; } }
+.scan-log li .lp { color: var(--accent-2-bright); margin-right: 6px; }
+
+.scan-meter-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.scan-meter-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.scan-meter {
+  flex: 1;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.scan-meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-2), var(--accent-2-bright));
+  box-shadow: 0 0 8px var(--accent-2-glow);
+  transition: width 0.95s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.scan-meter-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent-2-bright);
+  min-width: 34px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.scan-result {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  color: var(--text);
+  opacity: 0.55;
+  transition: opacity 0.4s ease;
+}
+.scan-result-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--muted-2);
+  flex-shrink: 0;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+}
+.scan-console.scan-complete .scan-result { opacity: 1; }
+.scan-console.scan-complete .scan-result-dot {
+  background: var(--accent-3-bright);
+  box-shadow: 0 0 8px var(--accent-3-glow);
+}
+
+@media (max-width: 720px) {
+  .scan-console { grid-template-columns: 1fr; }
+  .scan-viewport { width: 100%; max-width: 240px; margin: 0 auto; }
+}
+
+/* ===================================================================
+   CINEMATIC CYBER PORTAL INTRO
+   Circular energy-aperture reveal inspired by cinematic portal openings.
+   Original implementation; no external/movie assets.
+   =================================================================== */
+.portal-intro {
+  --portal-radius: 0px;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(227,27,35,.08), transparent 12%),
+    #020203;
+  pointer-events: auto;
+  isolation: isolate;
+  opacity: 1;
+  transition: opacity .55s ease;
+  -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent var(--portal-radius), #000 calc(var(--portal-radius) + 8px));
+  mask-image: radial-gradient(circle at center, transparent 0, transparent var(--portal-radius), #000 calc(var(--portal-radius) + 8px));
+}
+.portal-intro.is-finished {
+  opacity: 0;
+  pointer-events: none;
+}
+.portal-intro::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  opacity: .55;
+}
+.portal-intro::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 12px; height: 12px;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 12px 4px rgba(255,255,255,.9),
+    0 0 32px 12px rgba(255,59,63,.7),
+    0 0 80px 30px rgba(168,85,247,.35);
+  z-index: 6;
+}
+.portal-ring,
+.portal-energy {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.portal-ring {
+  width: 180px;
+  height: 180px;
+  border: 1px solid rgba(255,255,255,.22);
+  z-index: 3;
+}
+.portal-ring::before,
+.portal-ring::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0 14%, var(--accent-bright) 17%, transparent 23% 39%, var(--accent-2-bright) 43%, transparent 49% 70%, var(--accent-4-bright) 74%, transparent 80% 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px));
+  animation: portalSpin 2.8s linear infinite;
+}
+.portal-ring::after {
+  inset: 10px;
+  opacity: .5;
+  animation-direction: reverse;
+  animation-duration: 1.9s;
+}
+.portal-ring-outer { width: 260px; height: 260px; opacity: .65; }
+.portal-ring-mid { width: 215px; height: 215px; opacity: .8; transform: translate(-50%,-50%) rotate(18deg); }
+.portal-ring-inner { width: 160px; height: 160px; opacity: .95; }
+.portal-ring-inner::before { animation-duration: 1.25s; }
+.portal-ring-inner::after { animation-duration: 1.7s; }
+
+.portal-energy {
+  width: 235px;
+  height: 235px;
+  z-index: 2;
+  background: conic-gradient(from 15deg, transparent 0 8%, rgba(255,59,63,.95) 10% 14%, transparent 17% 28%, rgba(91,233,245,.95) 30% 34%, transparent 38% 53%, rgba(192,132,252,.9) 56% 63%, transparent 67% 82%, rgba(255,59,63,.85) 84% 89%, transparent 93%);
+  filter: blur(3px);
+  -webkit-mask: radial-gradient(farthest-side, transparent 0 83%, #000 84% 88%, transparent 89%);
+  mask: radial-gradient(farthest-side, transparent 0 83%, #000 84% 88%, transparent 89%);
+  animation: portalSpin 1.55s linear infinite;
+}
+.portal-energy-b { width: 205px; height: 205px; animation-direction: reverse; animation-duration: 1.05s; filter: blur(5px); opacity: .8; }
+.portal-energy-c { width: 285px; height: 285px; animation-duration: 2.6s; opacity: .55; filter: blur(7px); }
+
+.portal-core {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 34px; height: 34px;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 8%, #ff5559 20%, #e31b23 45%, rgba(227,27,35,.2) 68%, transparent 72%);
+  box-shadow: 0 0 24px 8px rgba(227,27,35,.7), 0 0 80px 24px rgba(168,85,247,.28);
+  z-index: 7;
+  animation: portalCorePulse .75s ease-in-out infinite alternate;
+}
+.portal-aperture {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 90px; height: 90px;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.75);
+  box-shadow: inset 0 0 35px rgba(0,0,0,.8), 0 0 22px rgba(255,255,255,.45);
+  z-index: 5;
+}
+.portal-status {
+  position: absolute;
+  left: 50%; top: calc(50% + 180px);
+  transform: translateX(-50%);
+  color: rgba(245,245,246,.72);
+  font: 600 .68rem/1 var(--font-mono);
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  z-index: 8;
+  white-space: nowrap;
+}
+.portal-sparks {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.portal-spark {
+  position: absolute;
+  left: 50%; top: 50%;
+  width: var(--spark-w, 2px);
+  height: var(--spark-h, 10px);
+  transform-origin: 50% 50%;
+  transform: rotate(var(--angle)) translateY(calc(-1 * var(--radius))) rotate(var(--spin));
+  background: linear-gradient(to bottom, #fff, var(--spark-color), transparent);
+  box-shadow: 0 0 10px var(--spark-color), 0 0 18px color-mix(in srgb, var(--spark-color) 45%, transparent);
+  opacity: 0;
+  animation: portalSpark 1.35s ease-out infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes portalSpin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+@keyframes portalCorePulse { from { transform: translate(-50%,-50%) scale(.82); } to { transform: translate(-50%,-50%) scale(1.16); } }
+@keyframes portalSpark {
+  0% { opacity: 0; transform: rotate(var(--angle)) translateY(-115px) rotate(var(--spin)) scale(.5); }
+  18% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateY(-240px) rotate(var(--spin)) scale(.1); }
+}
+
+@media (max-width: 700px) {
+  .portal-ring-outer { width: 190px; height: 190px; }
+  .portal-ring-mid { width: 160px; height: 160px; }
+  .portal-ring-inner { width: 125px; height: 125px; }
+  .portal-energy { width: 175px; height: 175px; }
+  .portal-energy-b { width: 150px; height: 150px; }
+  .portal-energy-c { width: 215px; height: 215px; }
+  .portal-status { top: calc(50% + 140px); font-size: .56rem; }
+  .portal-spark { animation-duration: 1.35s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-intro { display: none; }
+}
+
+
+/* Portal V4: denser fine-particle field and persistent sparkle during the full reveal */
+.portal-intro::before,
+.portal-intro::after {
+  pointer-events: none;
+}
+
+.portal-intro .portal-particles,
+.portal-intro .portal-sparks,
+.portal-intro .sparks,
+.portal-intro .particles {
+  animation-duration: 1.8s, 6.8s;
+  animation-iteration-count: infinite, 1;
+  animation-timing-function: ease-in-out, linear;
+  opacity: 1;
+}
+
+/* Fine-grain sparkle texture: tiny particles remain visible until the portal fully opens. */
+.portal-intro .portal-particles::before,
+.portal-intro .portal-particles::after,
+.portal-intro .particles::before,
+.portal-intro .particles::after {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.75) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(31,214,232,.65) 0 1px, transparent 1.5px),
+    radial-gradient(circle, rgba(168,85,247,.62) 0 1px, transparent 1.5px);
+  background-size: 19px 23px, 27px 31px, 23px 29px;
+  background-position: 0 0, 7px 11px, 13px 5px;
+  opacity: .55;
+  animation: portalFineParticles 2.2s linear infinite;
+}
+
+@keyframes portalFineParticles {
+  from { transform: translate3d(0,0,0) scale(1); opacity: .45; }
+  50% { opacity: .8; }
+  to { transform: translate3d(8px,-12px,0) scale(1.03); opacity: .45; }
 }
